@@ -60,3 +60,36 @@ class FoodDatabase:
                 conn.close()
                 print('SQLite connection closed')
 
+    def check_if_exists(self, barcode: int):
+        # Connect to the database and create the cursor
+        conn = self.sqlite3.connect('database.db')
+        c = conn.cursor() # Database cursor
+        print('Successfully connected to database.')
+        print('Querying whether the following barcode exists - ' + str(barcode))
+        c.execute('SELECT * from fooddata where barcode=?', (barcode,))
+        # If the record does not exist with that barcode, return false
+        if not c.fetchall():
+            conn.close()
+            print('SQLite connection closed')
+            return False
+        else:
+            conn.close()
+            print('SQLite connection closed')
+            return True
+
+    def remove_item(self, barcode: int):
+        try:
+            # Connect to the database and create the cursor
+            conn = self.sqlite3.connect('database.db')
+            c = conn.cursor() # Database cursor
+            print('Successfully connected to database.')
+            c.execute('DELETE FROM fooddata WHERE barcode=?', (barcode,))
+            conn.commit()
+            print('Item with barcode ' + str(barcode) + ' removed successfully')
+            c.close()
+        except self.sqlite3.Error as error:
+           print('Falied to remove item', error)
+        finally:
+            if conn:
+                conn.close()
+                print('SQLite connection closed')
