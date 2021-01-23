@@ -7,7 +7,7 @@ class FoodData:
     date: datetime
     name: str
     quantity: str
-    amount: int = 1
+    amount: float = 1.0
     off_url: str = ''
 
 class FoodDatabase:
@@ -125,3 +125,13 @@ class FoodDatabase:
             if retrieved_item:
                 return retrieved_item
         
+    def update_amount(self, barcode: int, amount_change: float):
+        # Retrieve the item
+        retrieved_item = self.retrieve_item(barcode)
+        # Update the amount
+        retrieved_item.amount += amount_change
+        # Delete the old entry
+        self.remove_item(barcode)
+        # Add the new entry
+        self.add_item(retrieved_item)
+
