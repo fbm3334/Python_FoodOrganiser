@@ -93,3 +93,35 @@ class FoodDatabase:
             if conn:
                 conn.close()
                 print('SQLite connection closed')
+
+    def retrieve_item(self, barcode: int):
+        retrieved_item = FoodData(0, '', '', '', 0, '')
+        try:
+            # Check whether the item exists first
+            if not self.check_if_exists(barcode):
+                return False
+            # Get the entry if the item exists
+            conn = self.sqlite3.connect('database.db')
+            c = conn.cursor() # Database cursor
+            print('Getting the following entry - ' + str(barcode))
+            c.execute('SELECT * from fooddata where barcode=?', (barcode,))
+            record = c.fetchall()
+            print('Total rows fetched = ', len(record))
+            # Create a blank FoodData class to store the result
+            
+            for row in record:
+                retrieved_item.barcode = barcode
+                retrieved_item.date = datetime.datetime.strptime(row[1], "%d/%m/%Y, %H:%M")
+                retrieved_item.name = row[2]
+                retrieved_item.quantity = row[3]
+                retrieved_item.amount = row[4]
+                retrieved_item.off_url = row[5]
+        except self.sqlite3.Error as error:
+           print('Falied to remove item', error)
+        finally:
+            if conn:
+                conn.close()
+                print('SQLite connection closed')
+            if retrieved_item:
+                return retrieved_item
+        
