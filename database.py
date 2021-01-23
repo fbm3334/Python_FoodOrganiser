@@ -133,5 +133,7 @@ class FoodDatabase:
         # Delete the old entry
         self.remove_item(barcode)
         # Add the new entry
-        self.add_item(retrieved_item)
+        # Only add it if the quantity is greater than 0, else only remove
+        if retrieved_item.amount > 0:
+            self.add_item(retrieved_item)
 
