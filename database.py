@@ -127,9 +127,11 @@ class FoodDatabase:
         
     def update_amount(self, barcode: int, amount_change: float):
         # Retrieve the item
+        retrieved_item = FoodData(0, '', '', '', 0, '')
         retrieved_item = self.retrieve_item(barcode)
         # Update the amount
-        retrieved_item.amount += amount_change
+        new_amount = retrieved_item.amount + amount_change
+        retrieved_item.amount = new_amount
         # Delete the old entry
         self.remove_item(barcode)
         # Add the new entry
