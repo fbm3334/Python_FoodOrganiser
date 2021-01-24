@@ -8,7 +8,7 @@ class FoodData:
     name: str
     quantity: str
     amount: float = 1.0
-    off_url: str = ''
+    img_url: str = ''
 
 class FoodDatabase:
     import sqlite3
@@ -37,18 +37,20 @@ class FoodDatabase:
         conn.close() # Close the database connection when done
 
     def add_item(self, item: FoodData):
+        conn = self.sqlite3.connect('database.db')
+        c = conn.cursor() # Database cursor
         try:
             # Connect to the database and create the cursor
-            conn = self.sqlite3.connect('database.db')
-            c = conn.cursor() # Database cursor
+            
             print('Successfully connected to database.')
             print('Adding the following data - ' + str(item))
             insert_param = ('''INSERT INTO fooddata
                         (barcode, date, name, quantity, amount, url)
                         VALUES (?, ?, ?, ?, ?, ?);''')
             # Need to convert date/time into a string
-            date_string = item.date.strftime("%d/%m/%Y, %H:%M")
-            data_tuple = (item.barcode, date_string, item.name, item.quantity, item.amount, item.off_url)
+            date_string = item.date.strftime("%Y-%m-%d %H:%M:%S")
+            print(type(date_string))
+            data_tuple = (item.barcode, date_string, item.name, item.quantity, item.amount, item.img_url)
             c.execute(insert_param, data_tuple)
             conn.commit()
             print('Item added successfully')
@@ -96,34 +98,32 @@ class FoodDatabase:
 
     def retrieve_item(self, barcode: int):
         retrieved_item = FoodData(0, '', '', '', 0, '')
-        try:
-            # Check whether the item exists first
-            if not self.check_if_exists(barcode):
-                return False
-            # Get the entry if the item exists
-            conn = self.sqlite3.connect('database.db')
-            c = conn.cursor() # Database cursor
-            print('Getting the following entry - ' + str(barcode))
-            c.execute('SELECT * from fooddata where barcode=?', (barcode,))
-            record = c.fetchall()
-            print('Total rows fetched = ', len(record))
-            # Create a blank FoodData class to store the result
-            
-            for row in record:
-                retrieved_item.barcode = barcode
-                retrieved_item.date = datetime.datetime.strptime(row[1], "%d/%m/%Y, %H:%M")
-                retrieved_item.name = row[2]
-                retrieved_item.quantity = row[3]
-                retrieved_item.amount = row[4]
-                retrieved_item.off_url = row[5]
-        except self.sqlite3.Error as error:
-           print('Falied to remove item', error)
-        finally:
-            if conn:
-                conn.close()
-                print('SQLite connection closed')
-            if retrieved_item:
-                return retrieved_item
+        conn = self.sqlite3.connect('database.db')
+        # Check whether the item exists first
+        if not self.check_if_exists(barcode):
+            return False
+        # Get the entry if the item exists
+        
+        c = conn.cursor() # Database cursor
+        print('Getting the following entry - ' + str(barcode))
+        c.execute('SELECT * from fooddata where barcode=?', (barcode,))
+        record = c.fetchall()
+        print('Total rows fetched = ', len(record))
+        # Create a blank FoodData class to store the result
+        retrieved_item.barcode = barcode
+        extracted_tuple = record[0]
+        print(extracted_tuple)
+        retrieved_item.date = datetime.datetime.strptime(extracted_tuple[1], "%Y-%m-%d %H:%M:%S")
+        retrieved_item.name = extracted_tuple[2]
+        retrieved_item.quantity = extracted_tuple[3]
+        retrieved_item.amount = extracted_tuple[4]
+        retrieved_item.img_url = extracted_tuple[5]
+        print("Retrieved...", retrieved_item)
+        if conn:
+            conn.close()
+            print('SQLite connection closed')
+        if retrieved_item:
+            return retrieved_item
         
     def update_amount(self, barcode: int, amount_change: float):
         # Retrieve the item
