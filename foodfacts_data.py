@@ -10,6 +10,7 @@ class FoodFactsData:
         # Firstly, check whether an entry already exists under that barcode
         if self.fd.check_if_exists(barcode):
             print('Entry already exists')
+            self.fd.update_amount(barcode, float) # Add to the current entry
         else:
             # Get data from OpenFoodFacts
             item = self.of.products.get_product(str(barcode))

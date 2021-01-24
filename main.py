@@ -4,21 +4,55 @@ import datetime
 fd = FoodDatabase()
 factsdata = FoodFactsData()
 
-item_to_add = FoodData(20303, datetime.datetime(2020, 1, 22), 'Test Item', '300g', 1, 'http://test.com')
+def main_add_item():
+    barcode = input('Please scan the item: ')
+    amount = input('How much do you want to add (number of items): ')
+    factsdata.add_entry(barcode, amount)
+    print('Entry added.')
 
-fd.add_item(item_to_add)
-print(fd.check_if_exists(20303))
-print(fd.check_if_exists(101))
-print(fd.retrieve_item(20303))
-fd.update_amount(20303, -0.54)
-print(fd.retrieve_item(20303))
-fd.remove_item(20303)
-print(fd.check_if_exists(20303))
-print(fd.check_if_exists(101))
+def main_remove_item():
+    barcode = input('Please scan the item: ')
+    fd.remove_item(barcode)
+    print('Item removed.')
+
+def main_check_item():
+    barcode = input('Please scan the item: ')
+    item = fd.retrieve_item(barcode)
+    print(item)
+    print('Item retrieved.')
+
+def main_update_quantity():
+    barcode = int(input('Please scan the item: '))
+    amount_change = float(input('Enter the amount to add/remove (+/-): '))
+    fd.update_amount(barcode, amount_change)
+    print('Amount updated.')
+
+def main_list_all():
+    print(fd.get_all_items())
+    print('Listing complete')
+
+def main_menu():
+    print('Food Organiser Command Line')
+    print('Options:')
+    print('1: Add an item')
+    print('2: Remove whole item')
+    print('3: Check an item')
+    print('4: Update item quantity')
+    print('5: List all items')
+    selection = int(input('Please make your selection: '))
+    if selection == 1:
+        main_add_item()
+    elif selection == 2:
+        main_remove_item()
+    elif selection == 3:
+        main_check_item()
+    elif selection == 4:
+        main_update_quantity()
+    elif selection == 5:
+        main_list_all()
+    else:
+        print('Invalid selection.')
 
 while True:
-    barcode = int(input('Enter the barcode: '))
-    print(barcode)
-    factsdata.add_entry(barcode, 1)
-    print(fd.check_if_exists(barcode))
-    print(fd.retrieve_item(barcode))  
+    main_menu()
+

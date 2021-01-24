@@ -137,3 +137,31 @@ class FoodDatabase:
         if retrieved_item.amount > 0:
             self.add_item(retrieved_item)
 
+    def get_all_items(self):
+        # Query to retrieve all items from database
+        conn = self.sqlite3.connect('database.db')
+        c = conn.cursor() # Database cursor
+        print('Getting all entries:')
+        c.execute('SELECT * from fooddata')
+        record = c.fetchall()
+        if not record:
+            conn.close()
+            print('SQLite connection closed')
+            return False
+        # Create an array of FoodData classes
+        items = []
+        for row in record:
+            retrieved_item = FoodData(0, '', '', '', 0, '')
+            retrieved_item.barcode = int(row[0])
+            retrieved_item.date = datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")
+            retrieved_item.name = row[2]
+            retrieved_item.quantity = row[3]
+            retrieved_item.amount = row[4]
+            retrieved_item.img_url = row[5]
+            items.append(retrieved_item)
+
+        if conn:
+            conn.close()
+            print('SQLite connection closed')
+        
+        return items
