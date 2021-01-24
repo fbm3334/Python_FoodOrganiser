@@ -4,6 +4,21 @@ class FoodFactsData:
     from datetime import datetime
     fd = FoodDatabase()
 
+    def download_product_image(self, barcode: int, url: str):
+        from os import path, mkdir
+        # Check that the img_cache folder exists, if not - create it
+        if not path.exists('img_cache'):
+            mkdir('img_cache')
+        # Check that an image does not already exist with the barcode name
+        image_path = 'img_cache/' + str(barcode) + '.jpg'
+        # If the image already exists, then don't download it again.
+        if path.exists(image_path):
+            print('Image already exists')
+        else:
+            import requests
+            img = requests.get(url, allow_redirects=True)
+            open(image_path, 'wb').write(img.content)
+
     def add_entry(self, barcode: int, amount: float):
         current_time = self.datetime.now()
         new_entry = self.FoodData(barcode, current_time, '', '', amount, '')
@@ -31,10 +46,16 @@ class FoodFactsData:
                     pass
                 try:
                     new_entry.img_url = item['product']['image_front_url']
+                    # Download the image if the URL exists
+                    self.download_product_image(barcode, new_entry.img_url)
                 except KeyError:
                     pass
-            
+                
+
             # Add the newly created entry into the database
             self.fd.add_item(new_entry)
+
+   
+        
 
         

@@ -165,5 +165,21 @@ class FoodDatabase:
         if conn:
             conn.close()
             print('SQLite connection closed')
-        
+
         return items
+
+    def save_items_csv(self, items_array):
+        import csv
+        from os import path, remove
+        if path.exists('food_csv.csv'):
+            remove('food_csv.csv')
+        
+        f = open('food_csv.csv', 'a') # Append
+
+        linewriter = csv.writer(f, dialect='excel')
+        linewriter.writerow(['Barcode', 'Date added', 'Product name', 'Product quantity', 'Amount remaining', 'Image URL'])
+        for item in items_array:
+            linewriter.writerow([item.barcode, item.date, item.name, item.quantity, item.amount, item.img_url])
+        
+        f.close()
+        

@@ -28,7 +28,9 @@ def main_update_quantity():
     print('Amount updated.')
 
 def main_list_all():
-    print(fd.get_all_items())
+    items_array = fd.get_all_items()
+    print(items_array)
+    fd.save_items_csv(items_array)
     print('Listing complete')
 
 def main_menu():
