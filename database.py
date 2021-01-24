@@ -14,6 +14,7 @@ class FoodDatabase:
     import sqlite3
 
     def __init__(self):
+        '''Initialise the databsase.'''
         # Initially open database.db to check that it exists
         f = open('database.db', 'a') # Append
         f.close() # Close straight away
@@ -37,6 +38,11 @@ class FoodDatabase:
         conn.close() # Close the database connection when done
 
     def add_item(self, item: FoodData):
+        '''Add an item to the database.
+
+        Parameters:
+        item (FoodData): Item to add
+        '''
         conn = self.sqlite3.connect('database.db')
         c = conn.cursor() # Database cursor
         try:
@@ -63,6 +69,14 @@ class FoodDatabase:
                 print('SQLite connection closed')
 
     def check_if_exists(self, barcode: int):
+        '''Check if an item exists in the database.
+
+        Parameters:
+        barcode (int): Barcode to check
+
+        Returns:
+        bool: True if it exists, false if not
+        '''
         # Connect to the database and create the cursor
         conn = self.sqlite3.connect('database.db')
         c = conn.cursor() # Database cursor
@@ -80,6 +94,11 @@ class FoodDatabase:
             return True
 
     def remove_item(self, barcode: int):
+        '''Remove an item from the database.
+
+        Parameters:
+        barcode (int): Barcode of item to remove
+        '''
         try:
             # Connect to the database and create the cursor
             conn = self.sqlite3.connect('database.db')
@@ -97,6 +116,14 @@ class FoodDatabase:
                 print('SQLite connection closed')
 
     def retrieve_item(self, barcode: int):
+        '''Retrieve an item from the database.
+
+        Parameters:
+        barcode (int): Barcode of item to remove
+
+        Returns:
+        bool/FoodData: False if item does not exist, a FoodData dataclass if the item does exist
+        '''
         retrieved_item = FoodData(0, '', '', '', 0, '')
         conn = self.sqlite3.connect('database.db')
         # Check whether the item exists first
@@ -126,6 +153,12 @@ class FoodDatabase:
             return retrieved_item
         
     def update_amount(self, barcode: int, amount_change: float):
+        '''Update the amount of a particular item.
+
+        Parameters:
+        barcode (int): Barcode of item to update
+        amount_change (float): Amount to add/remove
+        '''
         # Retrieve the item
         retrieved_item = FoodData(0, '', '', '', 0, '')
         retrieved_item = self.retrieve_item(barcode)
@@ -140,6 +173,11 @@ class FoodDatabase:
             self.add_item(retrieved_item)
 
     def get_all_items(self):
+        '''Get all items from the database
+
+        Returns:
+        [FoodData]: Array of FoodData items
+        '''
         # Query to retrieve all items from database
         conn = self.sqlite3.connect('database.db')
         c = conn.cursor() # Database cursor
@@ -169,6 +207,11 @@ class FoodDatabase:
         return items
 
     def save_items_csv(self, items_array):
+        '''Save the items to a CSV file
+
+        Parameters:
+        items_array: Array of FoodData items
+        '''
         import csv
         from os import path, remove
         if path.exists('food_csv.csv'):
