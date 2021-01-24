@@ -5,6 +5,12 @@ class FoodFactsData:
     fd = FoodDatabase()
 
     def download_product_image(self, barcode: int, url: str):
+        '''Download product images to the image cache
+
+        Parameters:
+        barcode (int): Barcode to add
+        url (str): URL of image
+        '''
         from os import path, mkdir
         # Check that the img_cache folder exists, if not - create it
         if not path.exists('img_cache'):
@@ -20,6 +26,12 @@ class FoodFactsData:
             open(image_path, 'wb').write(img.content)
 
     def add_entry(self, barcode: int, amount: float):
+        '''Download product images to the image cache
+
+        Parameters:
+        barcode (int): Barcode to add
+        amount (float): Amount to add
+        '''
         current_time = self.datetime.now()
         new_entry = self.FoodData(barcode, current_time, '', '', amount, '')
         # Firstly, check whether an entry already exists under that barcode
